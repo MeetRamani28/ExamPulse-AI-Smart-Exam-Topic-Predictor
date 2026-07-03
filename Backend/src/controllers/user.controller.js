@@ -3,6 +3,7 @@ const { sendWelcomeEmail } = require("../services/email.service");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
 const { OAuth2Client } = require("google-auth-library");
+const { uploadAvatarToCloudinary } = require("../utils/cloudinary");
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -114,7 +115,6 @@ exports.handleSocialAuth = async (req, res) => {
       if (!accessToken)
         return res.status(400).json({ message: "Google token missing" });
 
-      // Request user profile info from Google's userInfo endpoint using the token
       const googleResponse = await axios.get(
         "https://www.googleapis.com/oauth2/v3/userinfo",
         {
@@ -133,7 +133,6 @@ exports.handleSocialAuth = async (req, res) => {
       if (!code)
         return res.status(400).json({ message: "GitHub code missing" });
 
-      // 1. Exchange the temporary code for a secure GitHub access token
       const tokenResponse = await axios.post(
         "https://github.com/login/oauth/access_token",
         {
@@ -186,7 +185,6 @@ exports.handleSocialAuth = async (req, res) => {
     let user = await User.findOne({ email: userData.email });
 
     if (!user) {
-      // New user registration
       user = await User.create({
         name: userData.name,
         email: userData.email,
@@ -197,7 +195,6 @@ exports.handleSocialAuth = async (req, res) => {
 
       await sendWelcomeEmail(user.email, user.name, provider);
     } else {
-      // Link the profile provider details if logging in with social for the first time
       if (user.provider !== provider) {
         user.provider = provider;
         user.providerId = userData.providerId;
@@ -212,11 +209,8 @@ exports.handleSocialAuth = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: isProduction,
-
       secure: isProduction,
-
       sameSite: isProduction ? "strict" : "lax",
-
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -228,5 +222,89 @@ exports.handleSocialAuth = async (req, res) => {
   } catch (error) {
     console.error("❌ Social Authentication Controller Error:", error.message);
     res.status(500).json({ message: error.message });
+  }
+};
+
+// ==========================================
+// 🛠️ 4. Unified Profile Update Engine
+// ==========================================
+exports.updateUserProfile = async (req, res) => {
+  try {
+    const { name, currentPassword, newPassword } = req.body;
+
+    const user = await User.findById(req.user.id).select("+password");
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "Active workspace user not found." });
+    }
+
+    if (name && name.trim() !== "") {
+      user.name = name.trim();
+    }
+
+    if (req.file) {
+      if (!req.file.mimetype.startsWith("image/")) {
+        return res
+          .status(400)
+          .json({
+            message: "Uploaded file asset must be a valid image format.",
+          });
+      }
+      const cloudResult = await uploadAvatarToCloudinary(
+        req.file.buffer,
+        user._id,
+      );
+      user.avatar = cloudResult.secure_url;
+    }
+
+    if (newPassword) {
+      if (user.provider !== "local") {
+        return res.status(400).json({
+          message: `Accounts managed via ${user.provider} credentials cannot update localized passwords.`,
+        });
+      }
+
+      if (!currentPassword) {
+        return res
+          .status(400)
+          .json({
+            message: "Current authorization password must be supplied.",
+          });
+      }
+
+      const matchFound = await user.comparePassword(currentPassword);
+      if (!matchFound) {
+        return res
+          .status(401)
+          .json({
+            message: "Incorrect current validation password. Handshake denied.",
+          });
+      }
+
+      if (newPassword.length < 6) {
+        return res
+          .status(400)
+          .json({ message: "New password must match or exceed 6 characters." });
+      }
+
+      user.password = newPassword;
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Workspace profile updated beautifully! ✨",
+      user: user.toJSON(),
+    });
+  } catch (error) {
+    console.error("❌ Profile Sync Engine Failure:", error.message);
+    res
+      .status(500)
+      .json({
+        message:
+          "Engine failed to update user profile parameters: " + error.message,
+      });
   }
 };

@@ -39,6 +39,14 @@ export const AuthProvider = ({ children }) => {
     setUser(userData);
     setToken(sessionToken);
 
+    if (sessionToken) {
+      Cookies.set("token", sessionToken, {
+        expires: 7,
+        secure: window.location.protocol === "https:",
+        sameSite: "strict",
+      });
+    }
+
     localStorage.setItem("user", JSON.stringify(userData));
   };
 

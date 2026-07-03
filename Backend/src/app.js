@@ -12,7 +12,7 @@ const isDevelopment = process.env.NODE_ENV === "development";
 // ==========================================
 const allowedOrigins = isDevelopment
   ? ["http://localhost:5173", "http://127.0.0.1:5173"]
-  : [process.env.FRONTEND_URL]; // Strict production URL
+  : [process.env.FRONTEND_URL];
 
 app.use(
   cors({

@@ -1,22 +1,54 @@
 const express = require("express");
 const router = express.Router();
+const upload = require("../middlewares/upload");
+const { protect } = require("../middlewares/authMiddlewares");
+
 const {
   registerUser,
   loginUser,
   handleSocialAuth,
+  updateUserProfile,
 } = require("../controllers/user.controller");
 
 // ==========================================
-// 🔐 Authentication Routes
+// 🔐 Public Authentication Gateway Routes
 // ==========================================
 
-// Route for normal registration: POST http://localhost:3000/api/users/register
+/**
+ * @route   POST /api/users/register
+ * @desc    Standard email & password registration interface
+ * @access  Public
+ */
 router.post("/register", registerUser);
 
-// Route for normal login: POST http://localhost:3000/api/users/login
+/**
+ * @route   POST /api/users/login
+ * @desc    Standard email & password authentication handshake
+ * @access  Public
+ */
 router.post("/login", loginUser);
 
-// Route for Google/GitHub verification: POST http://localhost:3000/api/users/social-auth
+/**
+ * @route   POST /api/users/social-auth
+ * @desc    OAuth payload validation gateway (Google & GitHub)
+ * @access  Public
+ */
 router.post("/social-auth", handleSocialAuth);
+
+// ==========================================
+// 🛠️ Secure Protected Workspace Management Routes
+// ==========================================
+
+/**
+ * @route   PUT /api/users/update-profile
+ * @desc    Unified data synchronization (Name updates, Password rotation, and Cloudinary Avatars)
+ * @access  Private (Requires valid JWT Token cookie/header structure)
+ */
+router.put(
+  "/update-profile",
+  protect,
+  upload.single("avatar"),
+  updateUserProfile,
+);
 
 module.exports = router;
