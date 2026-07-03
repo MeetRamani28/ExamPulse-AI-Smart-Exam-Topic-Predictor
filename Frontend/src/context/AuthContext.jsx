@@ -49,7 +49,6 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setToken(null);
 
-    // Clear tracking caches cleanly
     Cookies.remove("token");
     localStorage.removeItem("user");
   };
