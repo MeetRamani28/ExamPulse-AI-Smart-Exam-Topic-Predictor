@@ -1,4 +1,5 @@
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { BlueprintProvider } from "./context/BlueprintContext.jsx";
 import { Routing } from "./routes/Routing";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { motion, AnimatePresence } from "framer-motion";
@@ -91,7 +92,9 @@ const App = () => {
   return (
     <GoogleOAuthProvider clientId={googleClientId}>
       <AuthProvider>
-        <AppContent />
+        <BlueprintProvider>
+          <AppContent />
+        </BlueprintProvider>
       </AuthProvider>
     </GoogleOAuthProvider>
   );

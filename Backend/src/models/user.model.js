@@ -37,12 +37,21 @@ const userSchema = new mongoose.Schema(
 
     avatar: {
       type: String,
-      default: "https://example.com/default-avatar.png",
+      default: function () {
+        return `https://ui-avatars.com/api/?name=${encodeURIComponent(this.name || "ExamPulse Student")}&background=6366f1&color=fff&bold=true&size=128`;
+      },
     },
   },
   {
     timestamps: true,
     toJSON: {
+      transform(doc, ret) {
+        delete ret.password;
+        delete ret.__v;
+        return ret;
+      },
+    },
+    toObject: {
       transform(doc, ret) {
         delete ret.password;
         delete ret.__v;

@@ -3,7 +3,7 @@ const { sendWelcomeEmail } = require("../services/email.service");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
 const { OAuth2Client } = require("google-auth-library");
-const { uploadAvatarToCloudinary } = require("../utils/cloudinary");
+const { uploadAvatarToCloudinary } = require("../config/cloudinary");
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 

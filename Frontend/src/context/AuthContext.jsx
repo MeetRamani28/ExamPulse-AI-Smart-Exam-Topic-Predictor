@@ -15,7 +15,6 @@ export const AuthProvider = ({ children }) => {
 
     if (secureToken) {
       setToken(secureToken);
-
       if (storedUser) {
         try {
           setUser(JSON.parse(storedUser));
@@ -32,9 +31,6 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  /**
-   * Login handler: dynamically mounts your student metadata profile
-   */
   const login = (userData, sessionToken) => {
     setUser(userData);
     setToken(sessionToken);
@@ -46,24 +42,19 @@ export const AuthProvider = ({ children }) => {
         sameSite: "strict",
       });
     }
-
     localStorage.setItem("user", JSON.stringify(userData));
   };
 
-  /**
-   * Logout handler: clears session states immediately
-   */
   const logout = () => {
     setUser(null);
     setToken(null);
-
     Cookies.remove("token");
     localStorage.removeItem("user");
   };
 
   return (
     <AuthContext.Provider value={{ user, token, loading, login, logout }}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };

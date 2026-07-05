@@ -4,6 +4,7 @@ const cors = require("cors");
 
 const app = express();
 const userRoutes = require("./routes/user.routes");
+const blueprintRoutes = require("./routes/blueprint.routes");
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
@@ -26,14 +27,18 @@ app.use(
       }
     },
     credentials: true,
-  }),
+  })
 );
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// ==========================================
+// 🚀 Application Core Routing Registration
+// ==========================================
 app.use("/api/users", userRoutes);
+app.use("/api/blueprints", blueprintRoutes); 
 
 app.get("/", (req, res) => {
   res.send("ExamPulse AI Backend is up and running! ✨");
