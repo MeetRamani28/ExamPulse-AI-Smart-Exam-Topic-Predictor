@@ -3,13 +3,8 @@ import { BlueprintProvider } from "./context/BlueprintContext.jsx";
 import { Routing } from "./routes/Routing";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { motion, AnimatePresence } from "framer-motion";
-
 import { FiZap } from "react-icons/fi";
 
-/**
- * 🛰️ App Content Wrapper
- * Extracts the loading state from AuthContext and shows the animated engine overlay
- */
 const AppContent = () => {
   const { loading } = useAuth();
 

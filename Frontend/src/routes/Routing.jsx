@@ -1,4 +1,4 @@
-import { Navigate, Routes, Route } from "react-router-dom";
+import { Navigate, Routes, Route, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { AuthPage } from "../pages/AuthPage";
 import DashboardLayout from "../layouts/DashboardLayout";
@@ -8,20 +8,23 @@ import { ProfileSettings } from "../components/ProfileSettings";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#070a13] text-slate-500 font-medium">
-        Validating secure session parameters...
-      </div>
-    );
-  }
+
+  if (loading) return null;
+
   return user ? children : <Navigate to="/" replace />;
 };
 
 const PublicRoute = ({ children }) => {
   const { user, loading } = useAuth();
+  const location = useLocation();
+
   if (loading) return null;
-  return !user ? children : <Navigate to="/dashboard" replace />;
+
+  return !user ? (
+    children
+  ) : (
+    <Navigate to="/dashboard" replace state={{ from: location }} />
+  );
 };
 
 export const Routing = () => {

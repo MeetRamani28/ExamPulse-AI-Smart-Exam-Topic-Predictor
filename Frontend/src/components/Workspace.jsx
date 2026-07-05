@@ -9,7 +9,7 @@ import {
   FiBookmark,
   FiFileText,
   FiAlertCircle,
-  FiX, // 👈 નવો આઇકોન
+  FiX, 
 } from "react-icons/fi";
 
 export const Workspace = () => {
@@ -62,7 +62,6 @@ export const Workspace = () => {
     }
   };
 
-  // 🚀 ફાઇલ રીસેટ હેન્ડલર
   const handleRemoveFile = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -104,7 +103,6 @@ export const Workspace = () => {
             >
               {selectedFile ? (
                 <div className="flex flex-col items-center text-center px-2 relative group/file">
-                  {/* 🚀 ONE-CLICK REMOVE BUTTON */}
                   {!isProcessing && (
                     <button
                       onClick={handleRemoveFile}
@@ -160,7 +158,6 @@ export const Workspace = () => {
             </motion.button>
           </form>
 
-          {/* Real-time Socket Streaming Tracking Block Layout */}
           <AnimatePresence>
             {isProcessing && (
               <motion.div
@@ -183,7 +180,6 @@ export const Workspace = () => {
                   </div>
                 </div>
 
-                {/* Micro-Stepper Tracker Bar Engine Layout */}
                 <div className="relative w-full bg-slate-950 h-1.5 rounded-full overflow-hidden border border-slate-900 shadow-inner">
                   <div
                     className="bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 h-full transition-all duration-500"
@@ -229,7 +225,6 @@ export const Workspace = () => {
               </motion.div>
             )}
 
-            {/* 🚀 SKELETON LOADER ANIMATION WHILE PROCESSING STEP-3 */}
             {isProcessing && !currentBlueprint && (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -271,7 +266,6 @@ export const Workspace = () => {
                   </h2>
                 </div>
 
-                {/* Sub-Topics Mapping Matrix Distribution Rows Grid */}
                 {!currentBlueprint.important_topics ||
                 currentBlueprint.important_topics.length === 0 ? (
                   <div className="p-5 bg-amber-500/5 border border-amber-500/10 text-amber-300 rounded-2xl flex items-center gap-3 text-xs font-semibold">

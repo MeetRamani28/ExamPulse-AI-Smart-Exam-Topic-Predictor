@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
 import { useBlueprint } from "../context/BlueprintContext";
-import { motion } from "framer-motion";
+// eslint-disable-next-line no-unused-vars
+import { motion, AnimatePresence } from "framer-motion";
 import {
   FiLayers,
   FiCornerDownRight,
   FiCalendar,
   FiArrowLeft,
   FiCheckCircle,
-  FiRefreshCw,
 } from "react-icons/fi";
+import { FiZap } from "react-icons/fi";
 
 export const PastAnalysis = () => {
-  const { history, loadingHistory, fetchHistory, setCurrentBlueprint } =
-    useBlueprint();
+  const { history, loadingHistory, fetchHistory } = useBlueprint();
   const [selectedLog, setSelectedLog] = useState(null);
 
   useEffect(() => {
@@ -21,10 +21,23 @@ export const PastAnalysis = () => {
 
   if (loadingHistory) {
     return (
-      <div className="min-h-[300px] flex flex-col items-center justify-center text-slate-400">
-        <FiRefreshCw className="h-8 w-8 animate-spin text-indigo-400 mb-3" />
-        <p className="text-xs font-bold uppercase tracking-widest">
-          Loading structural logs...
+      <div className="min-h-[400px] flex flex-col items-center justify-center font-sans">
+        <div className="relative flex items-center justify-center mb-4">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+            className="w-16 h-16 border-4 border-indigo-500/10 border-t-indigo-500 rounded-full"
+          />
+          <motion.div
+            animate={{ scale: [0.95, 1.1, 0.95], opacity: [0.7, 1, 0.7] }}
+            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+            className="absolute flex items-center justify-center text-indigo-400 drop-shadow-[0_0_10px_rgba(129,140,248,0.8)]"
+          >
+            <FiZap className="h-5 w-5 fill-indigo-400" />
+          </motion.div>
+        </div>
+        <p className="text-[10px] text-indigo-300 font-bold uppercase tracking-widest opacity-80 animate-pulse">
+          Fetching Historical Matrices...
         </p>
       </div>
     );
